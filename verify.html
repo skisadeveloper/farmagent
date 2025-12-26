@@ -4,7 +4,6 @@
   <title>Verify Fertilizer - FarmAgent</title>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
-
 <body>
   <h1>Verify Fertilizer QR (Farmer)</h1>
 
@@ -16,7 +15,7 @@
 
   <h2 id="result">Upload or scan a QR code</h2>
 
-  <!-- Added button to open scanned QR link -->
+  <!-- Button to open scanned QR link -->
   <a id="openQRButton" href="#" target="_blank" hidden>
     🔗 Open Scanned QR Link
   </a>
@@ -25,31 +24,39 @@
   <canvas id="canvas" hidden></canvas>
 
   <script>
-  // 🔐 Genuine IDs (frontend-only)
-  const genuineIDs = [
-    "FA-1002",
-    "FARMAGENT-001",
-    "UREA-2025"
-  ];
+  let genuineData = {}; // will hold JSON content
 
-  // Normalize once
-  const normalizedGenuineIDs = genuineIDs.map(id =>
-    id.trim().replace(/\s+/g, "").toUpperCase()
-  );
+  // Load genuine_ids.json dynamically
+  fetch("genuine_ids.json")
+    .then(res => res.json())
+    .then(data => {
+      genuineData = data;
+      console.log("Loaded genuine IDs:", genuineData);
 
+      // Auto-verify if URL has ?id=...
+      const idFromURL = getURLParameter("id");
+      if (idFromURL) verifyID(idFromURL);
+    })
+    .catch(err => console.error("Failed to load genuine_ids.json:", err));
+
+  // Get URL parameter
+  function getURLParameter(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+
+  // Verify function using genuineData
   function verifyID(rawID) {
     const result = document.getElementById("result");
+    const scannedID = rawID.trim().replace(/\s+/g, "").toUpperCase();
 
-    const scannedID = rawID
-      .trim()
-      .replace(/\s+/g, "")
-      .toUpperCase();
-
-    console.log("NORMALIZED SCANNED ID:", scannedID);
-    console.log("VALID IDS:", normalizedGenuineIDs);
-
-    if (normalizedGenuineIDs.includes(scannedID)) {
-      result.innerHTML = "✅ Fertilizer ID Verified (Genuine)";
+    if (genuineData[scannedID]) {
+      const info = genuineData[scannedID];
+      result.innerHTML = `
+        ✅ Fertilizer Verified (Genuine)<br>
+        Company: ${info.company}<br>
+        Product: ${info.product}<br>
+        Batch: ${info.batch}
+      `;
       result.style.color = "green";
     } else {
       result.innerHTML = "❌ Fertilizer ID Not Found (Possibly Fake)";
@@ -57,17 +64,27 @@
     }
   }
 
-  // Function to handle scanned QR URL and set button
+  // Handle scanned QR and create verify button
   function handleScannedURL(rawQRData) {
-    const button = document.getElementById("openQRButton");
-    button.href = rawQRData;
-    button.hidden = false;
+    try {
+      const url = new URL(rawQRData);
+      const id = url.searchParams.get("id");
+      if (!id) throw new Error("ID not found in QR URL");
 
-    document.getElementById("result").innerHTML =
-      `QR scanned! Click the button to open: <b>${rawQRData}</b>`;
+      const button = document.getElementById("openQRButton");
+      button.href = `verify.html?id=${encodeURIComponent(id)}`;
+      button.hidden = false;
+
+      document.getElementById("result").innerHTML =
+        `QR scanned! Click the button to verify ID: <b>${id}</b>`;
+    } catch (err) {
+      console.error(err);
+      document.getElementById("result").innerHTML =
+        "❌ Invalid QR format";
+    }
   }
 
-  // 📂 Image upload QR scan
+  // Image upload scan
   function handleImageUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -84,18 +101,14 @@
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const qr = jsQR(imageData.data, imageData.width, imageData.height);
 
-      if (qr) {
-        console.log("RAW QR DATA:", qr.data);
-        handleScannedURL(qr.data);
-      } else {
-        alert("QR code not detected in image");
-      }
+      if (qr) handleScannedURL(qr.data);
+      else alert("QR code not detected in image");
     };
 
     img.src = URL.createObjectURL(file);
   }
 
-  // 📷 Camera scan (on click only)
+  // Camera scan
   function openCamera() {
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
@@ -131,6 +144,5 @@
       });
   }
   </script>
-
 </body>
 </html>
