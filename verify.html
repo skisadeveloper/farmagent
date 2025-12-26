@@ -1,46 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Verify Fertilizer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify Fertilizer - FarmAgent</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
+
 <body>
+  <h1>Verify Fertilizer QR (Farmer)</h1>
 
-<h2 id="status">🔍 Verifying...</h2>
-<p id="details"></p>
+  <button onclick="openCamera()">📷 Scan using Camera</button>
+  <br><br>
 
-<script>
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+  <input type="file" accept="image/*" onchange="handleImageUpload(event)">
+  <br><br>
 
-if (!id) {
-  document.getElementById("status").innerText =
-    "📷 Please scan a fertilizer QR code";
-  document.getElementById("details").innerText =
-    "QR code will redirect you here automatically.";
-} else {
-  fetch("genuine_ids.json")
-    .then(res => res.json())
-    .then(db => {
-      if (db[id]) {
-        document.getElementById("status").innerText =
-          "✅ Genuine Fertilizer";
-        document.getElementById("details").innerHTML = `
-          <strong>Company:</strong> ${db[id].company}<br>
-          <strong>Product:</strong> ${db[id].product}<br>
-          <strong>Batch:</strong> ${db[id].batch}
-        `;
+  <h2 id="result">Upload or scan a QR code</h2>
+
+  <!-- Added button to open scanned QR link -->
+  <a id="openQRButton" href="#" target="_blank" hidden>
+    🔗 Open Scanned QR Link
+  </a>
+
+  <video id="video" hidden></video>
+  <canvas id="canvas" hidden></canvas>
+
+  <script>
+  // 🔐 Genuine IDs (frontend-only)
+  const genuineIDs = [
+    "FA-1002",
+    "FARMAGENT-001",
+    "UREA-2025"
+  ];
+
+  // Normalize once
+  const normalizedGenuineIDs = genuineIDs.map(id =>
+    id.trim().replace(/\s+/g, "").toUpperCase()
+  );
+
+  function verifyID(rawID) {
+    const result = document.getElementById("result");
+
+    const scannedID = rawID
+      .trim()
+      .replace(/\s+/g, "")
+      .toUpperCase();
+
+    console.log("NORMALIZED SCANNED ID:", scannedID);
+    console.log("VALID IDS:", normalizedGenuineIDs);
+
+    if (normalizedGenuineIDs.includes(scannedID)) {
+      result.innerHTML = "✅ Fertilizer ID Verified (Genuine)";
+      result.style.color = "green";
+    } else {
+      result.innerHTML = "❌ Fertilizer ID Not Found (Possibly Fake)";
+      result.style.color = "red";
+    }
+  }
+
+  // Function to handle scanned QR URL and set button
+  function handleScannedURL(rawQRData) {
+    const button = document.getElementById("openQRButton");
+    button.href = rawQRData;
+    button.hidden = false;
+
+    document.getElementById("result").innerHTML =
+      `QR scanned! Click the button to open: <b>${rawQRData}</b>`;
+  }
+
+  // 📂 Image upload QR scan
+  function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const img = new Image();
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const qr = jsQR(imageData.data, imageData.width, imageData.height);
+
+      if (qr) {
+        console.log("RAW QR DATA:", qr.data);
+        handleScannedURL(qr.data);
       } else {
-        document.getElementById("status").innerText =
-          "❌ Fertilizer ID Not Found (Possibly Fake)";
-        document.getElementById("details").innerText =
-          "This QR code is not registered on FarmAgent.";
+        alert("QR code not detected in image");
       }
-    });
-}
-</script>
+    };
 
+    img.src = URL.createObjectURL(file);
+  }
+
+  // 📷 Camera scan (on click only)
+  function openCamera() {
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(stream => {
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        video.hidden = false;
+        video.play();
+
+        requestAnimationFrame(scanFrame);
+
+        function scanFrame() {
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const qr = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (qr) {
+              video.srcObject.getTracks().forEach(track => track.stop());
+              video.hidden = true;
+              handleScannedURL(qr.data);
+              return;
+            }
+          }
+          requestAnimationFrame(scanFrame);
+        }
+      });
+  }
+  </script>
 
 </body>
 </html>
-
