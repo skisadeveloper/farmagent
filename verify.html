@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verify Fertilizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h2 id="status">🔍 Verifying...</h2>
+<p id="details"></p>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+fetch("genuine_ids.json")
+  .then(res => res.json())
+  .then(db => {
+    if (db[id]) {
+      document.getElementById("status").innerText = "✅ Genuine Fertilizer";
+      document.getElementById("details").innerHTML = `
+        <strong>Company:</strong> ${db[id].company}<br>
+        <strong>Product:</strong> ${db[id].product}<br>
+        <strong>Batch:</strong> ${db[id].batch}
+      `;
+    } else {
+      document.getElementById("status").innerText =
+        "❌ Fertilizer ID Not Found (Possibly Fake)";
+      document.getElementById("details").innerText =
+        "This ID is not registered on FarmAgent.";
+    }
+  });
+</script>
+
+</body>
+</html>

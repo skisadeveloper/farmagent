@@ -1,0 +1,17 @@
+{
+  "FA-1001": {
+    "company": "KrishiGrow Pvt Ltd",
+    "product": "Urea 45kg",
+    "batch": "KG-2025-A"
+  },
+  "FA-1002": {
+    "company": "AgroMax",
+    "product": "DAP 50kg",
+    "batch": "AM-2025-B"
+  },
+  "FA-1003": {
+    "company": "GreenHarvest",
+    "product": "Potash 25kg",
+    "batch": "GH-2025-C"
+  }
+}

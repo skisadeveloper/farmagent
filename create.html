@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Fertilizer QR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<h2>🏭 Generate Genuine Fertilizer QR</h2>
+
+<input id="fid" placeholder="Enter Fertilizer ID (e.g. FA-1004)">
+<br><br>
+<button onclick="generateQR()">Generate QR</button>
+
+<div id="qrcode" style="margin-top:20px;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script>
+function generateQR() {
+  const id = document.getElementById("fid").value.trim();
+  if (!id) {
+    alert("Enter Fertilizer ID");
+    return;
+  }
+
+  const url = `https://skisadeveloper.github.io/farmagent/verify.html?id=${id}`;
+
+  document.getElementById("qrcode").innerHTML = "";
+  new QRCode("qrcode", {
+    text: url,
+    width: 200,
+    height: 200
+  });
+}
+</script>
+
+<p>📌 Paste this QR code on fertilizer packaging.</p>
+
+</body>
+</html>
