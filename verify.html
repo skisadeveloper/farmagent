@@ -2,25 +2,256 @@
 <html>
 <head>
   <title>Verify Fertilizer - FarmAgent</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .back-home {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background-color: white;
+      color: #2e7d32;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .back-home:hover {
+      background-color: #2e7d32;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #2e7d32;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      font-weight: 600;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      background: white;
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 2rem;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      margin: 0.5rem;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-upload-label {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      display: inline-block;
+      margin: 0.5rem;
+    }
+
+    .file-upload-label:hover {
+      background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .file-upload-label:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #result {
+      background: #f5f5f5;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+      font-size: 1.2rem;
+      font-weight: 500;
+      line-height: 1.8;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s ease;
+    }
+
+    #result.verified {
+      background: linear-gradient(135deg, #d4f8d4 0%, #c8e6c9 100%);
+      border-color: #4caf50;
+      color: green;
+    }
+
+    #result.fake {
+      background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+      border-color: #f44336;
+      color: red;
+    }
+
+    #openQRButton {
+      background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #openQRButton:hover {
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    #video {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 12px;
+      margin-top: 1rem;
+      border: 3px solid #4caf50;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .divider {
+      margin: 1.5rem 0;
+      color: #81c784;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .back-home {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 2rem 1.5rem;
+        margin-top: 1rem;
+      }
+
+      button, .file-upload-label {
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+      }
+
+      #result {
+        font-size: 1.1rem;
+        padding: 1.2rem;
+      }
+
+      #openQRButton {
+        padding: 0.9rem 1.5rem;
+        font-size: 0.95rem;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+  </style>
 </head>
 <body>
-  <h1>Verify Fertilizer QR (Farmer)</h1>
 
-  <button onclick="openCamera()">📷 Scan using Camera</button>
-  <br><br>
+  <a href="index.html" class="back-home">🏠 Back to Home</a>
 
-  <input type="file" accept="image/*" onchange="handleImageUpload(event)">
-  <br><br>
+  <div class="container">
+    <h1>🔍 Verify Fertilizer QR (Farmer)</h1>
 
-  <h2 id="result">Upload or scan a QR code</h2>
+    <button onclick="openCamera()">📷 Scan using Camera</button>
+    
+    <div class="divider">— OR —</div>
 
-  <!-- Button to open scanned QR link -->
-  <a id="openQRButton" href="#" target="_blank" hidden>
-    🔗 Open Scanned QR Link
-  </a>
+    <label for="fileInput" class="file-upload-label">📁 Upload QR Image</label>
+    <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
 
-  <video id="video" hidden></video>
+    <h2 id="result">Upload or scan a QR code</h2>
+
+    <!-- Button to open scanned QR link -->
+    <a id="openQRButton" href="#" target="_blank" hidden>
+      Verify
+    </a>
+
+    <video id="video" hidden></video>
+  </div>
+
   <canvas id="canvas" hidden></canvas>
 
   <script>
@@ -57,10 +288,10 @@
         Product: ${info.product}<br>
         Batch: ${info.batch}
       `;
-      result.style.color = "green";
+      result.className = 'verified fade-in';
     } else {
       result.innerHTML = "❌ Fertilizer ID Not Found (Possibly Fake)";
-      result.style.color = "red";
+      result.className = 'fake fade-in';
     }
   }
 
@@ -77,10 +308,12 @@
 
       document.getElementById("result").innerHTML =
         `QR scanned! Click the button to verify ID: <b>${id}</b>`;
+      document.getElementById("result").className = 'fade-in';
     } catch (err) {
       console.error(err);
       document.getElementById("result").innerHTML =
         "❌ Invalid QR format";
+      document.getElementById("result").className = 'fake fade-in';
     }
   }
 
