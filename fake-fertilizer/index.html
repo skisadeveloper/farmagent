@@ -1,0 +1,101 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <title>FarmAgent – Local AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+
+<body>
+  <h2>Fake Fertilizer Detection</h2>
+
+  <input type="file" accept="image/*" onchange="predictImage(event)">
+  <div id="result"></div>
+
+  <script>
+    const modelURL = "model/model.json";
+    const metadataURL = "model/metadata.json";
+
+    let model;
+
+    async function loadModel() {
+      model = await tmImage.load(modelURL, metadataURL);
+      console.log("Model Loaded");
+    }
+
+    loadModel();
+
+    async function predictImage(event) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(event.target.files[0]);
+
+      img.onload = async () => {
+        const prediction = await model.predict(img);
+
+        let output = "";
+        prediction.forEach(p => {
+          output += `${p.className}: ${(p.probability * 100).toFixed(2)}%<br>`;
+        });
+
+        document.getElementById("result").innerHTML = output;
+      };
+    }
+  </script>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fake Fertilizer Detection | FarmAgent</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+</head>
+
+<body>
+  <h2>Fake Fertilizer Detection</h2>
+
+  <input type="file" accept="image/*" onchange="predictImage(event)">
+  <div id="result"></div>
+
+  <script>
+    const modelURL = "model/model.json";
+    const metadataURL = "model/metadata.json";
+
+    let model;
+
+    async function loadModel() {
+      model = await tmImage.load(modelURL, metadataURL);
+      console.log("Fake fertilizer model loaded");
+    }
+
+    loadModel();
+
+    async function predictImage(event) {
+      if (!model) {
+        alert("Model still loading");
+        return;
+      }
+
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(event.target.files[0]);
+
+      img.onload = async () => {
+        const prediction = await model.predict(img);
+
+        let output = "";
+        prediction.forEach(p => {
+          output += `<b>${p.className}</b>: ${(p.probability * 100).toFixed(2)}%<br>`;
+        });
+
+        document.getElementById("result").innerHTML = output;
+      };
+    }
+  </script>
+</body>
+</html>
+
