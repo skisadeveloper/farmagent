@@ -3,25 +3,256 @@
 <head>
   <title>Create Fertilizer QR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .back-home {
+      position: absolute;
+      top: 2rem;
+      left: 2rem;
+      background-color: white;
+      color: #2e7d32;
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .back-home:hover {
+      background-color: #2e7d32;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      color: #2e7d32;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      font-weight: 600;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      background: white;
+      padding: 3rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      margin-top: 2rem;
+    }
+
+    #fid {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
+      border: 2px solid #c8e6c9;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: #2e7d32;
+    }
+
+    #fid:focus {
+      outline: none;
+      border-color: #4caf50;
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    #fid::placeholder {
+      color: #81c784;
+    }
+
+    button {
+      background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+      color: white;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      margin-top: 1.5rem;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .qr-wrapper {
+      margin-top: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    .qr-wrapper.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #qrcode {
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+      border-radius: 12px;
+      display: inline-block;
+      border: 3px solid #4caf50;
+      box-shadow: 0 6px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    #qrcode img {
+      border-radius: 8px;
+      display: block;
+    }
+
+    #downloadBtn {
+      background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+      color: white;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #downloadBtn:hover {
+      background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    #downloadBtn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    p {
+      color: #2e7d32;
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .back-home {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      h2 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 2rem 1.5rem;
+        margin-top: 1rem;
+      }
+
+      #fid {
+        font-size: 1rem;
+        padding: 0.9rem 1.2rem;
+      }
+
+      button {
+        padding: 0.9rem 2rem;
+        font-size: 1rem;
+      }
+
+      #downloadBtn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+      }
+
+      p {
+        font-size: 1rem;
+      }
+    }
+
+    /* Animation for QR code generation */
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
 </head>
 <body>
 
-<h2>🏭 Generate Genuine Fertilizer QR</h2>
+<a href="index.html" class="back-home">🏠 Back to Home</a>
 
-<input id="fid" placeholder="Enter Fertilizer ID (e.g. FA-1004)">
-<br><br>
-<button onclick="generateQR()">Generate QR</button>
+<div class="container">
+  <h2>🏭 Generate Genuine Fertilizer QR</h2>
 
-<div id="qrcode" style="margin-top:20px;"></div>
+  <input id="fid" placeholder="Enter Fertilizer ID (e.g. FA-1004)">
+  <br><br>
+  <button onclick="generateQR()">Generate QR</button>
+
+  <div class="qr-wrapper" id="qrWrapper">
+    <div id="qrcode"></div>
+    <button id="downloadBtn" onclick="downloadQR()">📥 Download QR Code</button>
+  </div>
+
+  <p>📌 Paste this QR code on fertilizer packaging.</p>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
+let currentFertilizerId = '';
+
 function generateQR() {
   const id = document.getElementById("fid").value.trim();
   if (!id) {
     alert("Enter Fertilizer ID");
     return;
   }
+
+  currentFertilizerId = id;
 
   const url = `https://skisadeveloper.github.io/farmagent/verify.html?id=${id}`;
 
@@ -31,10 +262,33 @@ function generateQR() {
     width: 200,
     height: 200
   });
+
+  // Show the QR wrapper with animation
+  const wrapper = document.getElementById("qrWrapper");
+  wrapper.classList.add("show");
+}
+
+function downloadQR() {
+  const qrCanvas = document.querySelector("#qrcode canvas");
+  
+  if (!qrCanvas) {
+    alert("Please generate a QR code first");
+    return;
+  }
+
+  // Convert canvas to blob and download
+  qrCanvas.toBlob(function(blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `FarmAgent_QR_${currentFertilizerId}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
 }
 </script>
-
-<p>📌 Paste this QR code on fertilizer packaging.</p>
 
 </body>
 </html>
