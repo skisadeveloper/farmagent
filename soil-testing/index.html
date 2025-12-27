@@ -1,57 +1,519 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>FarmAgent – Soil Testing AI</title>
+  <head>
+    <title>FarmAgent – Soil Testing AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
-</head>
-
-<body>
-  <h2>Soil Testing AI</h2>
-
-  <input type="file" accept="image/*" onchange="predictImage(event)">
-  <div id="result"></div>
-
-  <script>
-    const modelURL = "model/model.json";
-    const metadataURL = "model/metadata.json";
-
-    let model;
-
-    async function loadModel() {
-      try {
-        console.log("Loading soil model...");
-        model = await tmImage.load(modelURL, metadataURL);
-        console.log("✅ Soil model loaded");
-      } catch (e) {
-        console.error("❌ Failed to load soil model", e);
-        alert("Model load failed. Run via localhost, not file://");
-      }
-    }
-
-    loadModel();
-
-    async function predictImage(event) {
-      if (!model) {
-        alert("Model still loading");
-        return;
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(event.target.files[0]);
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+      }
 
-      img.onload = async () => {
-        const prediction = await model.predict(img);
+      .back-home {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        background-color: white;
+        color: #2e7d32;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+      }
 
-        let output = "<h3>Result</h3>";
-        prediction.forEach(p => {
-          output += `${p.className}: ${(p.probability * 100).toFixed(2)}%<br>`;
-        });
+      .back-home:hover {
+        background-color: #2e7d32;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-        document.getElementById("result").innerHTML = output;
-      };
-    }
-  </script>
-</body>
+      h2 {
+        color: #2e7d32;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 600;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      label[for="fileInput"], .file-upload-btn {
+        background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        border: 3px solid transparent;
+        display: inline-block;
+        text-align: center;
+      }
+
+      label[for="fileInput"]:hover, .file-upload-btn:hover {
+        background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        border-color: #2e7d32;
+      }
+
+      label[for="fileInput"]:active, .file-upload-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #result {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-top: 2rem;
+        min-width: 400px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        color: #2e7d32;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+
+      #result:not(:empty) {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #result h3 {
+        color: #1b5e20;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .result-item {
+        padding: 12px 16px;
+        margin: 8px 0;
+        border-radius: 8px;
+        background: #f5f5f5;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+      }
+
+      .result-item:hover {
+        background: #e8f5e9;
+        transform: translateX(5px);
+      }
+
+      .top-result {
+        background: linear-gradient(135deg, #d4f8d4 0%, #c8e6c9 100%);
+        border: 2px solid #4caf50;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+      }
+
+      .top-result:hover {
+        background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+        transform: scale(1.02);
+      }
+
+      .container {
+        background: white;
+        padding: 3rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        margin-top: 2rem;
+      }
+
+      @media (max-width: 768px) {
+        .back-home {
+          top: 1rem;
+          left: 1rem;
+          padding: 0.6rem 1rem;
+          font-size: 0.9rem;
+        }
+
+        h2 {
+          font-size: 2rem;
+        }
+
+        .container {
+          padding: 2rem 1.5rem;
+          margin-top: 1rem;
+        }
+
+        #result {
+          min-width: auto;
+          width: 100%;
+        }
+
+        label[for="fileInput"], .file-upload-btn {
+          padding: 1rem 2rem;
+          font-size: 1rem;
+        }
+
+        .result-item {
+          font-size: 1rem;
+        }
+
+        .top-result {
+          font-size: 1.1rem;
+        }
+      }
+
+      /* Loading animation */
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .loading {
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="../index.html" class="back-home">🏠 Back to Home</a>
+
+    <div class="container">
+      <h2>🌱 Soil Testing AI</h2>
+      
+      <label for="fileInput" class="file-upload-btn">📷 Upload Soil Image</label>
+      <input type="file" id="fileInput" accept="image/*" onchange="predictImage(event)" />
+      
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const modelURL = "model/model.json";
+      const metadataURL = "model/metadata.json";
+
+      let model;
+
+      async function loadModel() {
+        try {
+          console.log("Loading soil model...");
+          model = await tmImage.load(modelURL, metadataURL);
+          console.log("✅ Soil model loaded");
+        } catch (e) {
+          console.error("❌ Failed to load soil model", e);
+          alert("Model load failed. Run via localhost, not file://");
+        }
+      }
+
+      loadModel();
+
+      async function predictImage(event) {
+        if (!model) {
+          alert("Model still loading");
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(event.target.files[0]);
+
+        img.onload = async () => {
+          const prediction = await model.predict(img);
+
+          // sort predictions high → low
+          prediction.sort((a, b) => b.probability - a.probability);
+
+          let output = "<h3>Result</h3>";
+
+          prediction.forEach((p, index) => {
+            const percent = (p.probability * 100).toFixed(2);
+
+            // highlight top result
+            const className =
+              index === 0 ? "result-item top-result" : "result-item";
+
+            output += `
+    <div class="${className}">
+      ${p.className}: ${percent}%
+    </div>
+  `;
+          });
+
+          document.getElementById("result").innerHTML = output;
+        };
+      }
+    </script>
+  </body>
 </html>
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FarmAgent – Soil Testing AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+      }
+
+      .back-home {
+        position: absolute;
+        top: 2rem;
+        left: 2rem;
+        background-color: white;
+        color: #2e7d32;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .back-home:hover {
+        background-color: #2e7d32;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        color: #2e7d32;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 600;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      label[for="fileInput"],
+      .file-upload-btn {
+        background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+        color: white;
+        padding: 1.2rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        border: 3px solid transparent;
+        display: inline-block;
+        text-align: center;
+      }
+
+      label[for="fileInput"]:hover,
+      .file-upload-btn:hover {
+        background: linear-gradient(135deg, #66bb6a 0%, #81c784 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        border-color: #2e7d32;
+      }
+
+      label[for="fileInput"]:active,
+      .file-upload-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      #result {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-top: 2rem;
+        min-width: 400px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        font-size: 1.1rem;
+        line-height: 2;
+        color: #2e7d32;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease;
+      }
+
+      #result:not(:empty) {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #result h3 {
+        color: #1b5e20;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .container {
+        background: white;
+        padding: 3rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+        margin-top: 2rem;
+      }
+
+      @media (max-width: 768px) {
+        .back-home {
+          top: 1rem;
+          left: 1rem;
+          padding: 0.6rem 1rem;
+          font-size: 0.9rem;
+        }
+
+        h2 {
+          font-size: 2rem;
+        }
+
+        .container {
+          padding: 2rem 1.5rem;
+          margin-top: 1rem;
+        }
+
+        #result {
+          min-width: auto;
+          width: 100%;
+        }
+
+        label[for="fileInput"],
+        .file-upload-btn {
+          padding: 1rem 2rem;
+          font-size: 1rem;
+        }
+      }
+
+      /* Loading animation */
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .loading {
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+    </style>
+  </head>
+
+  <body>
+    <a href="../index.html" class="back-home">🏠 Back to Home</a>
+
+    <div class="container">
+      <h2>🌱 Soil Testing AI</h2>
+
+      <label for="fileInput" class="file-upload-btn"
+        >📷 Upload Soil Image</label
+      >
+      <input
+        type="file"
+        id="fileInput"
+        accept="image/*"
+        onchange="predictImage(event)"
+      />
+
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const modelURL = "model/model.json";
+      const metadataURL = "model/metadata.json";
+
+      let model;
+
+      async function loadModel() {
+        try {
+          console.log("Loading soil model...");
+          model = await tmImage.load(modelURL, metadataURL);
+          console.log("✅ Soil model loaded");
+        } catch (e) {
+          console.error("❌ Failed to load soil model", e);
+          alert("Model load failed. Run via localhost, not file://");
+        }
+      }
+
+      loadModel();
+
+      async function predictImage(event) {
+        if (!model) {
+          alert("Model still loading");
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(event.target.files[0]);
+
+        img.onload = async () => {
+          const prediction = await model.predict(img);
+
+          let output = "<h3>Result</h3>";
+          prediction.forEach((p) => {
+            output += `${p.className}: ${(p.probability * 100).toFixed(
+              2
+            )}%<br>`;
+          });
+
+          document.getElementById("result").innerHTML = output;
+        };
+      }
+    </script>
+  </body>
+</html> -->
