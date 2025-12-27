@@ -5,7 +5,7 @@ FarmAgent is an AI-driven web application built to protect farmers from fake fer
 
 ---
 
-## 🚜 Problem Statement
+## Problem Statement
 
 Fake and substandard fertilizers are a serious issue in agriculture:
 
@@ -18,7 +18,7 @@ FarmAgent solves this using **AI + web technology**, accessible directly from a 
 
 ---
 
-## 🎯 Project Goals
+## Project Goals
 
 - Detect **fake vs genuine fertilizers** using image-based AI  
 - Enable **QR / Fertilizer ID verification** for authenticity checks  
@@ -28,7 +28,7 @@ FarmAgent solves this using **AI + web technology**, accessible directly from a 
 
 ---
 
-## 🧠 What FarmAgent Does
+## What FarmAgent Does
 
 FarmAgent currently delivers **three core capabilities**:
 
@@ -52,7 +52,7 @@ FarmAgent currently delivers **three core capabilities**:
 
 ---
 
-## 🧪 How It Works
+## How It Works
 
 1. User uploads product or soil images  
 2. TensorFlow.js runs AI models locally in the browser  
@@ -63,7 +63,7 @@ No heavy backend → lightweight, fast, scalable.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - HTML5  
@@ -85,7 +85,7 @@ No heavy backend → lightweight, fast, scalable.
 
 ---
 
-## 🌐 Why Browser-Based AI?
+## Why Browser-Based AI?
 
 - Works on **low-end devices**  
 - Minimal internet dependency  
@@ -94,7 +94,7 @@ No heavy backend → lightweight, fast, scalable.
 
 ---
 
-## 💡 Business Opportunity
+## Business Opportunity
 
 ### 1️⃣ B2G (Government & Agriculture Departments)
 - Fertilizer subsidy fraud prevention  
@@ -118,7 +118,7 @@ No heavy backend → lightweight, fast, scalable.
 
 ---
 
-## 🤖 Vision: Agentic AI for Farming
+## Vision: Agentic AI for Farming
 
 FarmAgent is a step toward **Agentic Farming AI**, where AI systems:
 
@@ -130,7 +130,7 @@ Moving farming from **reactive** to **intelligent & proactive**.
 
 ---
 
-## 🚀 Future Roadmap
+## Future Roadmap
 
 - Multi-class fertilizer classification  
 - Real-time camera scanning  
@@ -141,7 +141,7 @@ Moving farming from **reactive** to **intelligent & proactive**.
 
 ---
 
-## 🤝 Contributions
+## Contributions
 
 Contributions are welcome in:
 
@@ -154,12 +154,10 @@ Fork it, break it, improve it.
 
 ---
 
-## 📜 License
+## License
 
 Open-source project intended for **social impact, innovation, and scalable agricultural solutions**.
 
 ---
 
-## 🌱 Closing Note
 
-FarmAgent is not just a tool — it is **infrastructure for trust in agriculture**, built to directly empower farmers at the ground level.
