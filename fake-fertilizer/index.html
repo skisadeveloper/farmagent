@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fake Fertilizer Detection | FarmAgent</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+
+  <style>
+    body { font-family: Arial; }
+    button { padding: 10px 15px; margin-top: 10px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h2>Fake Fertilizer Detection</h2>
+
+<input type="file" id="upload" accept="image/*">
+<br><br>
+
+<img id="preview" width="250"><br><br>
+
+<button onclick="predict()">Check Authenticity</button>
+
+<p id="status">Loading model...</p>
+<h3 id="result"></h3>
+
+<script src="script.js"></script>
+</body>
+</html>
