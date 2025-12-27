@@ -3,20 +3,235 @@
   <head>
     <title>FarmAgent</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+      }
+
+      .hero1 {
+        background-image: url("./images/Hero-image.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      /* Optional: Add overlay for better text visibility */
+      .hero1::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgb(117 117 117 / 29%);
+        z-index: 0;
+      }
+
+      .hero1 > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .navbar {
+        background: linear-gradient(90deg, #4caf50 0%, #66bb6a 100%);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar h1 {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+
+      .navbar a {
+        background-color: white;
+        color: #2e7d32;
+        padding: 0.75rem 1.5rem;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .navbar a:hover {
+        background-color: #2e7d32;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .services {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 3rem;
+        padding: 0 2rem;
+      }
+
+      .services a {
+        background: rgba(20, 20, 20, 0.277);
+        color: #ffffff;
+        padding: 2rem 3rem;
+        text-decoration: none;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid white;
+        border-bottom: 1px solid rgb(255, 255, 255);
+        background: linear-gradient(
+          108deg,
+          rgba(0, 120, 14, 0.16) 0%,
+          rgba(0, 50, 16, 0.04) 100%
+        );
+        backdrop-filter: blur(5px);
+      }
+
+      .services a:hover {
+        background: linear-gradient(135deg, #723c15 0%, #411b00 100%);
+
+        border-bottom: 2px solid #fff;
+        background: linear-gradient(
+          90deg,
+          #004132 0%,
+          #15721b 22.32%,
+          #000 100%
+        );
+
+        color: rgb(255, 255, 255);
+        transform: scale(1.05);
+        /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); */
+        /* border-color: #ffffff; */
+      }
+
+      body > div > p {
+        text-align: center;
+        font-size: 1.5rem;
+        color: #2e7d32;
+        margin-top: 3rem;
+        font-weight: 500;
+      }
+
+      .fertilizer {
+        height: 350px;
+        width: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #fff;
+        background: linear-gradient(
+          90deg,
+          #411b00 0%,
+          #723c15 22.32%,
+          #000 100%
+        );
+      }
+
+      .soiltest {
+        height: 350px;
+        width: 350px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @media (max-width: 768px) {
+        .navbar {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .navbar h1 {
+          font-size: 1.5rem;
+        }
+
+        .navbar a {
+          font-size: 0.9rem;
+          padding: 0.6rem 1rem;
+        }
+
+        .services {
+          flex-direction: column;
+          align-items: center;
+          gap: 1.5rem;
+        }
+
+        .services a {
+          width: 80%;
+          text-align: center;
+        }
+      }
+
+      .navbar {
+        /* width: 1440px; */
+        border-bottom: 1px solid #fff;
+        background: linear-gradient(
+          90deg,
+          #004132 0%,
+          #15721b 22.32%,
+          #000 100%
+        );
+      }
+    </style>
   </head>
   <body>
-    <h1>🌾 FarmAgent</h1>
-    <p>AI + QR based Fake Fertilizer Detection</p>
+    <div class="hero">
+      <!-- texts -->
+    </div>
+    <div class="hero1">
+      <!-- navbar -->
+      <div class="navbar">
+        <h1>🌾 FarmAgent</h1>
+        <a href="create.html">Create Genuine Fertilizer QR (Company)</a>
 
-    <a href="create.html">Create Genuine Fertilizer QR (Company)</a><br /><br />
-    <a href="verify.html">Verify Fertilizer QR (Farmer)</a>
+        <a href="verify.html">Verify Fertilizer QR (Farmer)</a>
+      </div>
 
-    <!-- newly addedd -->
+      <!-- middle part -->
+      <div class="services">
+        <a href="fake-fertilizer/index.html" class="fertilizer"
+          >🧪 Detect Fake Fertilizer</a
+        >
+        <a href="soil-testing/index.html" class="soiltest"
+          >🌱 Soil Quality Testing</a
+        >
+      </div>
 
-    <p>newly added <br></p>
-    <a href="fake-fertilizer/index.html">🧪 Fake Fertilizer Detection</a><br /> <br><br>
-    <a href="soil-testing/index.html">🌱 Soil Quality Testing</a><br /><br><br>
-    <!-- <a href="verify.html">🔍 QR Verification</a><br><br> -->
+      <p style="color: white"><br><br>Building Agentic AI for a Agentic Farming <br><br></p>
+
+      <center><p style="color: white; font-size: 15px; width: 1000px; ">
+        Creating intelligent
+        systems that observe, decide, and act on farms in real time, helping
+        farmers prevent risks, optimize inputs, and improve productivity through
+        adaptive, autonomous support.
+      </p></center>
+
+      <!-- newly addedd -->
+
+      <br /><br />
+      <br /><br /><br />
+      <!-- <a href="verify.html">🔍 QR Verification</a><br><br> -->
+
+      
+    </div>
   </body>
 </html>
-
